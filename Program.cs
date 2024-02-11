@@ -1,10 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
 
 	FileActivityTracker fat = new FileActivityTracker();
-	fat.WriteActivity("The linqpad app is running.");
+	fat.WriteActivity("The app is running.");
 	
 	SqliteActivityTracker sat = new SqliteActivityTracker();
-	sat.WriteActivity("This is from linqpad!");
+	sat.WriteActivity("This is from the app!");
 
 public class FileActivityTracker : Trackable, ITrackable
 {
@@ -17,9 +17,10 @@ public class FileActivityTracker : Trackable, ITrackable
 	
 	public override bool Configure(){
         char pathSlash = Path.DirectorySeparatorChar;
+
 		Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss.fff tt")} : Configure() method called! ");
 		// read values from configuration
-		FileName = @$"%userprofile%{pathSlash}temp{pathSlash}InterfaceStudy.log";
+		FileName = @$"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}{pathSlash}temp{pathSlash}InterfaceStudy.log";
 		return true;
 	}
 	
