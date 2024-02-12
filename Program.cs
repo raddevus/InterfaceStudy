@@ -1,9 +1,9 @@
 ﻿using Microsoft.Data.Sqlite;
 
-	FileActivityTracker fat = new FileActivityTracker();
+	ITrackable fat = new FileActivityTracker();
 	fat.WriteActivity("The app is running.");
 	
-	SqliteActivityTracker sat = new SqliteActivityTracker();
+	ITrackable sat = new SqliteActivityTracker();    
 	sat.WriteActivity("This is from the app!");
 
 public class FileActivityTracker : Trackable, ITrackable
@@ -24,7 +24,7 @@ public class FileActivityTracker : Trackable, ITrackable
 		return true;
 	}
 	
-	public string StorageTarget
+	public override string StorageTarget
     {
         get
         {
@@ -32,7 +32,7 @@ public class FileActivityTracker : Trackable, ITrackable
         }
     }
     
-    public bool WriteActivity(String message)
+    public override bool WriteActivity(String message)
     {
         try
         {
@@ -60,10 +60,10 @@ public interface ITrackable
     bool WriteActivity(String message);
 	// The implementation class must call Configure() from its constructor
 	// The configure method will read the values from preset configuration.
-	//bool Configure();
+	bool Configure();
 }
 
-public class SqliteActivityTracker: Trackable, ITrackable {
+public class SqliteActivityTracker: Trackable{
     
     public SqliteCommand Command{
         get{return this.command;}
@@ -81,7 +81,7 @@ public class SqliteActivityTracker: Trackable, ITrackable {
     protected SqliteConnection connection;
     protected SqliteCommand command;
 	
-	public string StorageTarget
+	public override string StorageTarget
     {
         get
         {
@@ -129,7 +129,7 @@ public class SqliteActivityTracker: Trackable, ITrackable {
         }
     }
 	
-	public bool WriteActivity(String message)
+	public override bool WriteActivity(String message)
     {
 		Command.CommandText = @"INSERT into Task (Description)values($message);select * from task where id =(SELECT last_insert_rowid())";
         Command.Parameters.AddWithValue("$message",message);
@@ -163,11 +163,13 @@ public class SqliteActivityTracker: Trackable, ITrackable {
 				};
 }
 
-public abstract class Trackable {
+public abstract class Trackable: ITrackable {
 	
 	public Trackable(){
 		Configure();
 	}
 	
 	public abstract bool Configure();
+    public abstract bool WriteActivity(String file);
+    public abstract string StorageTarget{get;}
 }
